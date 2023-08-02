@@ -1,5 +1,6 @@
 package com.mgmoura.controllers;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,8 @@ public class PacientesController {
 			
 			Paciente paciente = new Paciente();
 			paciente.setNome(dto.getNome());
-			paciente.setDataNascimento(dto.getDataNascimento());
+			paciente.setDataNascimento(new SimpleDateFormat("yyyy-MM-dd").parse(dto.getDataNascimento()));
+			// paciente.setDataNascimento(dto.getDataNascimento());
 			paciente.setTelefone(dto.getTelefone());
 			
 			pacienteRepository.save(paciente);
@@ -75,7 +77,8 @@ public class PacientesController {
 				Paciente item = paciente.get();
 				item.setNome(dto.getNome());
 				item.setTelefone(dto.getTelefone());
-				item.setDataNascimento(dto.getDataNascimento());
+				item.setDataNascimento(new SimpleDateFormat("yyyy-MM-dd").parse(dto.getDataNascimento()));
+				//item.setDataNascimento(dto.getDataNascimento());
 				
 				pacienteRepository.save(item);
 				
