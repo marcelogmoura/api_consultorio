@@ -19,6 +19,8 @@ import com.mgmoura.dtos.PacientesPutRequestDto;
 import com.mgmoura.entities.Paciente;
 import com.mgmoura.repositories.PacienteRepository;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/pacientes")
 public class PacientesController {
@@ -27,7 +29,7 @@ public class PacientesController {
 	private PacienteRepository pacienteRepository;
 	
 	@PostMapping
-	public ResponseEntity<String> post(@RequestBody PacientesPostRequestDto dto) {
+	public ResponseEntity<String> post(@RequestBody @Valid PacientesPostRequestDto dto) {
 		
 		try {
 			
@@ -46,7 +48,7 @@ public class PacientesController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<String> put(@RequestBody PacientesPutRequestDto dto) {
+	public ResponseEntity<String> put(@RequestBody @Valid PacientesPutRequestDto dto) {
 		try {
 			Optional<Paciente> paciente = pacienteRepository.findById(dto.getIdPaciente());
 			
@@ -63,12 +65,11 @@ public class PacientesController {
 				pacienteRepository.save(item);
 				
 				return ResponseEntity.status(200).body("Dados atualizados com sucesso.");
-			}
+			} 
 			
 		}catch (Exception e) {
 			return ResponseEntity.status(500).body("Falha ao atualizar: " + e.getMessage());
 		}
-		
 		
 	}
 	

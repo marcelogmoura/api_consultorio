@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mgmoura.dtos.AtendimentosPostRequestDto;
 import com.mgmoura.repositories.AtendimentoRepository;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("api/atendimentos")
 public class AtendimentosController {
@@ -21,11 +23,11 @@ public class AtendimentosController {
 	private AtendimentoRepository atendimentoRepository;
 	
 	@PostMapping
-	public void post(@RequestBody AtendimentosPostRequestDto dto) {
+	public void post(@RequestBody @Valid AtendimentosPostRequestDto dto) {
 		
 	}
 	
-	@PutMapping
+	@PutMapping  // @Valid nao esquecer
 	public void put() {
 		
 	}
