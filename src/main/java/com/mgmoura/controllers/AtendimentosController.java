@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mgmoura.dtos.AtendimentosPostRequestDto;
+import com.mgmoura.dtos.AtendimentosResponseDto;
 import com.mgmoura.entities.Atendimento;
 import com.mgmoura.entities.Paciente;
 import com.mgmoura.repositories.AtendimentoRepository;
@@ -35,13 +37,17 @@ public class AtendimentosController {
 	private PacienteRepository pacienteRepository;
 	
 	@PostMapping
-	public ResponseEntity<String> post(@RequestBody @Valid AtendimentosPostRequestDto dto) {
+	public ResponseEntity<AtendimentosResponseDto> post(@RequestBody @Valid AtendimentosPostRequestDto dto) {
+		
+		AtendimentosResponseDto response = new AtendimentosResponseDto();
 		
 		try {
 			Optional<Paciente> paciente = pacienteRepository.findById(dto.getIdPaciente());
 			
 			if(paciente.isEmpty()) {
-				return ResponseEntity.status(400).body("Paciente não localizado.");
+				response.setStatus(HttpStatus.BAD_REQUEST); // 400
+				response.setMensagem("Paciente não localizado.");
+				
 				
 			}else {
 				Atendimento atendimento = new Atendimento();
@@ -51,14 +57,17 @@ public class AtendimentosController {
 				
 				atendimentoRepository.save(atendimento);
 				
-				return ResponseEntity.status(201).body("Atendimento cadastrado com sucesso.");
-				
+				response.setStatus(HttpStatus.CREATED); // 201
+				response.setMensagem("Atendimento cadastrado com sucesso");
 			}
 			
 		}catch (Exception e) {
-			return ResponseEntity.status(500).body("Falha ao cadastrar: " +e.getMessage());
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR); 
+			response.setMensagem(e.getMessage());
 			
 		}
+		
+		return ResponseEntity.status(response.getStatus().value()).body(response);
 	}
 	
 	@PutMapping  // @Valid nao esquecer

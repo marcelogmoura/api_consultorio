@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mgmoura.dtos.PacientesPostRequestDto;
 import com.mgmoura.dtos.PacientesPutRequestDto;
+import com.mgmoura.dtos.PacientesResponseDto;
 import com.mgmoura.entities.Paciente;
 import com.mgmoura.repositories.PacienteRepository;
 
@@ -29,7 +31,9 @@ public class PacientesController {
 	private PacienteRepository pacienteRepository;
 	
 	@PostMapping
-	public ResponseEntity<String> post(@RequestBody @Valid PacientesPostRequestDto dto) {
+	public ResponseEntity<PacientesResponseDto> post(@RequestBody @Valid PacientesPostRequestDto dto) {
+		
+		PacientesResponseDto response = new PacientesResponseDto();
 		
 		try {
 			
@@ -40,20 +44,31 @@ public class PacientesController {
 			
 			pacienteRepository.save(paciente);
 			
-			return ResponseEntity.status(201).body("Paciente cadastrado com sucesso.");
+			response.setStatus(HttpStatus.CREATED); //201
+			response.setMensagem("Paciente cadastrado com sucesso.");
+			response.setPaciente(paciente);
+					
 			
 		}catch (Exception e) {
-			return ResponseEntity.status(500).body("Erro ao cadastrar paciente" + e.getMessage());
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			response.setMensagem(e.getMessage());
 		}
+		
+		return ResponseEntity.status(response.getStatus().value()).body(response);
 	}
 	
 	@PutMapping
-	public ResponseEntity<String> put(@RequestBody @Valid PacientesPutRequestDto dto) {
+	public ResponseEntity<PacientesResponseDto> put(@RequestBody @Valid PacientesPutRequestDto dto) {
+		
+		PacientesResponseDto response = new PacientesResponseDto();
+		
 		try {
 			Optional<Paciente> paciente = pacienteRepository.findById(dto.getIdPaciente());
-			
+						
 			if(paciente.isEmpty()) {
-				return ResponseEntity.status(400).body("Paciente não encontrado");
+				
+				response.setStatus(HttpStatus.BAD_REQUEST); // 400
+				response.setMensagem("Paciente não encontrado");
 				
 			}else {
 				
@@ -64,34 +79,45 @@ public class PacientesController {
 				
 				pacienteRepository.save(item);
 				
-				return ResponseEntity.status(200).body("Dados atualizados com sucesso.");
+				response.setStatus(HttpStatus.OK);// 200
+				response.setMensagem("Dados atualizados com sucesso.");
+				response.setPaciente(item);
 			} 
 			
 		}catch (Exception e) {
-			return ResponseEntity.status(500).body("Falha ao atualizar: " + e.getMessage());
+				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR); // 500
+				response.setMensagem(e.getMessage());
 		}
 		
+		return ResponseEntity.status(response.getStatus().value()).body(response);
 	}
 	
 	@DeleteMapping("{idPaciente}")
-	public ResponseEntity<String> delete(@PathVariable("idPaciente") Integer idPaciente) {
+	public ResponseEntity<PacientesResponseDto> delete(@PathVariable("idPaciente") Integer idPaciente) {
+		
+		PacientesResponseDto response = new PacientesResponseDto();
 		
 		try {
 			
 			Optional<Paciente> paciente = pacienteRepository.findById(idPaciente);
 			
 			if(paciente.isEmpty()) {
-				return ResponseEntity.status(400).body("Paciente não encontrado.");
+				response.setStatus(HttpStatus.BAD_REQUEST); // 400
+				response.setMensagem("Paciente não encontrado.");
+				
 			}else {
 				pacienteRepository.delete(paciente.get());
-				return ResponseEntity.status(200).body("Paciente excluído com sucesso");
+				
+				response.setStatus(HttpStatus.OK); // 200
+				response.setMensagem("Paciente excluído com sucesso.");
+				response.setPaciente(paciente.get());
 			}
 			
 		}catch (Exception e) {
-			return ResponseEntity.status(500)
-					.body("Falha ao excluir: " 	+ e.getMessage());
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR); // 500
+
 		}
-		
+		return ResponseEntity.status(response.getStatus().value()).body(response);
 	}
 	
 	@GetMapping
