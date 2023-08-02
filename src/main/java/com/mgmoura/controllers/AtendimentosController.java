@@ -73,6 +73,22 @@ public class AtendimentosController {
 		
 	}
 	
+	
+	@GetMapping
+	public ResponseEntity<List<Atendimento>> getAll() {
+		try {
+			List<Atendimento> atendimentos = atendimentoRepository.findAll();
+			return ResponseEntity.status(200).body(atendimentos);
+			
+		}catch (Exception e) {
+			return ResponseEntity.status(500).body(null);
+		}
+		
+		
+	}
+	
+	
+	
 	@GetMapping("{dataInicio}/{dataFim}")
 	public ResponseEntity<List<Atendimento>> getAll(
 			@PathVariable() String dataInicio,
