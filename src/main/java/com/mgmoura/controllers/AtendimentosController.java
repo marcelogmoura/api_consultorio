@@ -52,7 +52,8 @@ public class AtendimentosController {
 			}else {
 				Atendimento atendimento = new Atendimento();
 				atendimento.setPaciente(paciente.get());
-				atendimento.setDataAtendimento(dto.getDataAtendimento());
+				atendimento.setDataAtendimento(new SimpleDateFormat("yyyy-MM-dd").parse(dto.getDataAtendimento()));
+				//atendimento.setDataAtendimento(dto.getDataAtendimento());
 				atendimento.setObservacoes(dto.getObservacoes());
 				
 				atendimentoRepository.save(atendimento);

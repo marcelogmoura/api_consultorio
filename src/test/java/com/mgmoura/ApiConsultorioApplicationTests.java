@@ -19,9 +19,11 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+import com.mgmoura.dtos.AtendimentosPostRequestDto;
 import com.mgmoura.dtos.PacientesPostRequestDto;
 import com.mgmoura.dtos.PacientesPutRequestDto;
 import com.mgmoura.dtos.PacientesResponseDto;
+import com.mgmoura.entities.Atendimento;
 import com.mgmoura.entities.Paciente;
 
 @SpringBootTest
@@ -60,9 +62,7 @@ class ApiConsultorioApplicationTests {
 		PacientesResponseDto response = mapper.readValue(responseBody, PacientesResponseDto.class);
 		
 		paciente = response.getPaciente();
-		
 	}
-	
 	
 	
 	@Test
@@ -82,7 +82,6 @@ class ApiConsultorioApplicationTests {
 				.contentType("application/json") 
 				.content(mapper.writeValueAsString(dto))) 
 				.andExpect(status().isOk());
-
 	}
 		
 	
@@ -104,14 +103,25 @@ class ApiConsultorioApplicationTests {
 	
 	@Test
 	@Order(5)
-	void testeAtendimentoPost() {
-		fail ("implementar");
+	public void testeAtendimentoPost() throws Exception{
+		
+		AtendimentosPostRequestDto dto = new AtendimentosPostRequestDto();
+		
+		dto.setIdPaciente(paciente.getIdPaciente());
+		dto.setDataAtendimento("2023-08-03");
+		dto.setObservacoes("Teste Observacoes");
+		
+		mockMvc.perform(post("/api/atendimentos")
+				.contentType("application/json") 
+				.content(mapper.writeValueAsString(dto))) 
+				.andExpect(status().isCreated());
 	}
 	
 	@Test
 	@Order(7)
-	void testeAtendimentoGetAll() {
-		fail ("implementar");
+	public void testeAtendimentoGetAll() throws Exception{
+		
+		mockMvc.perform(get("/api/atendimentos/2023-06-01/2023-09-30")).andExpect(status().isOk());
 	}
 	
 

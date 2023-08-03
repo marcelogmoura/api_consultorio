@@ -9,7 +9,7 @@ public class AtendimentosPostRequestDto {
 	
 	private Integer idPaciente;
 	private Integer idAtendimento;
-	private Date dataAtendimento;
+	private String dataAtendimento;
 	private String observacoes;
 
 }
